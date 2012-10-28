@@ -1,18 +1,42 @@
-define(["lib/mootools-core", "lib/mootools-more", "lib/processing", "triangles/Triangle"],
-function(mc, mm, p, Triangle) {
-	'use strict';
+define([
+    "lib/mootools-core",
+    "lib/mootools-more",
+    "lib/processing",
+    
+    "triangles/Triangle",
+    "triangles/Grid",
+    "triangles/Cell"
+    ],
+    
+    function(mc, mm, p,
+        Triangle, Grid, Cell) {
+	
+    'use strict';
 
 	var TrianglesMaster = new Class({
 
+        // Config
+        gridCellSize : 30,
+        triangleSize : 30,
+
+
+        // Properties
 		canvas : null,
 		processing : null,
 		procesingInstance : null,
 		sizeFunc : null,
 
+        grid : null,
 		triangles : new Array(),
+
+
+
+
 
 		initialize : function(canvas) {
 			this.canvas = canvas;
+
+            this._initGrid();
 		},
 
 		start : function() {
@@ -20,6 +44,7 @@ function(mc, mm, p, Triangle) {
             	this.canvas, this._setupProcessing.bind(this));
 		},
 
+        // Processing
         _setupProcessing: function(p) {
 
             this.processing = p;
@@ -35,6 +60,12 @@ function(mc, mm, p, Triangle) {
             }
         },
 
+        setup: function() {
+            this.processing.background(0, 0, 0, 0);
+        },
+
+
+        // Canvas size
         _defaultSizeFunc : function() {
             return {
                 width: this.processing.width,
@@ -52,22 +83,30 @@ function(mc, mm, p, Triangle) {
         	this.sizeFunc = func;
         },
 
-        setup: function() {
-            this.processing.background(0, 0, 0, 0);
+        getCenter : function() {
+            return {
+                x : this.processing.width / 2,
+                y : this.processing.height / 2
+            };
         },
 
-        getCenter : function() {
-        	return {
-        		x : this.processing.width / 2,
-        		y : this.processing.height / 2
-        	};
+
+        // Actual triangles stuff
+
+        _initGrid : function() {
+            this.grid = new Grid(this.gridCellSize, this.gridCellSize);
         },
+
         clicks : 0,
         mouseClicked : function() {
+
+            var coords = this.grid.getCellAtCoords(this.processing.mouseX, this.processing.mouseY);
+
+
         	this.triangles.push(
         		new Triangle(
-        			this.processing.mouseX, this.processing.mouseY,
-        			30, this.clicks++ * (Math.PI / 2)));
+        			coords.centerX, coords.centerY,
+        			this.triangleSize, this.clicks++ * (Math.PI / 2)));
         },
 
         draw : function() {

@@ -1,4 +1,5 @@
-define(["lib/mootools-core", "triangles/MathUtils"], function(mootoolsCore, MathUtils) {
+define(["lib/mootools-core", "lib/mootools-more", "triangles/MathUtils"],
+	function(mc, mm, MathUtils) {
 	
 	/**
 		ROTATION AND POSITION
@@ -45,7 +46,12 @@ define(["lib/mootools-core", "triangles/MathUtils"], function(mootoolsCore, Math
 		y : 0,
 		size : 10,
 		rotation : 0,
-		color : new Color(0, 0, 0),
+		color : {
+			r : 255,
+			g : 0,
+			b : 255,
+			a : 255 / 2
+		},
 
 		initialize : function(x, y, size, rotation) {
 			this.x = x;
@@ -114,9 +120,8 @@ define(["lib/mootools-core", "triangles/MathUtils"], function(mootoolsCore, Math
 
 		draw : function(master) {
 			master.processing.noStroke();
-			master.processing.fill(this.color.r, this.color.g, this.color.b);
+			master.processing.fill(this.color.r, this.color.g, this.color.b, this.color.a);
 			
-			master.processing.fill(0);
 			var corners = this._calcCorners();
 			master.processing.triangle(
 				corners.x1, corners.y1,
