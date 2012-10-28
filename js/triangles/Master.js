@@ -18,6 +18,7 @@ define([
         // Config
         gridCellSize : 30,
         triangleSize : 30,
+        newTriangleChance : 0.3,
 
 
         // Properties
@@ -28,8 +29,6 @@ define([
 
         grid : null,
 		triangles : new Array(),
-
-
 
 
 
@@ -97,23 +96,40 @@ define([
             this.grid = new Grid(this.gridCellSize, this.gridCellSize);
         },
 
-        clicks : 0,
         mouseClicked : function() {
-
-            var coords = this.grid.getCellAtCoords(this.processing.mouseX, this.processing.mouseY);
-
-
-        	this.triangles.push(
-        		new Triangle(
-        			coords.centerX, coords.centerY,
-        			this.triangleSize, this.clicks++ * (Math.PI / 2)));
+        	this.addTriangleAt(this.processing.mouseX, this.processing.mouseY);
         },
 
         draw : function() {
         	var size = (this._getSizeFunc())();
         	this.processing.size(size.width, size.height);
 
+            if(this.processing.random(0, 1) <= this.newTriangleChance) {
+                this.addTriangleAt(this.processing.mouseX, this.processing.mouseY);
+            }
+
         	this._drawTriangles();
+        },
+
+        addTriangleAt : function(x, y) {
+            var coords = this.grid.getCellAtCoords(x, y);
+
+            var triangle = new Triangle(
+                    coords.centerX, coords.centerY,
+                    this.triangleSize, this.triangles.length * (Math.PI / 2));
+
+            // Triangle random color rotation
+            var hsb = [triangle.color.r, triangle.color.g, triangle.color.b].rgbToHsb();
+            hsb[0] = this.processing.random(0, 360);
+            var rgb = hsb.hsbToRgb();
+
+            triangle.color.r = rgb[0];
+            triangle.color.g = rgb[1];
+            triangle.color.b = rgb[2];
+
+            this.triangles.push(triangle);
+
+            return triangle;
         },
 
         _drawTriangles : function() {

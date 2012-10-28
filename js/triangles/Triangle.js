@@ -50,7 +50,7 @@ define(["lib/mootools-core", "lib/mootools-more", "triangles/MathUtils"],
 			r : 255,
 			g : 0,
 			b : 255,
-			a : 255 / 2
+			a : 255 * 0.2
 		},
 
 		initialize : function(x, y, size, rotation) {
